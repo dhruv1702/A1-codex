@@ -60,6 +60,14 @@ npm install
 npm run dev
 ```
 
+If Next.js throws `Watchpack Error (watcher): EMFILE`, use polling mode instead:
+
+```bash
+cd /Users/dhruvverma/Documents/Projects/A1-codex/frontend
+rm -rf .next
+npm run dev:poll
+```
+
 Frontend demo deep link:
 
 - `http://127.0.0.1:3000/?demo=1&run=1`
