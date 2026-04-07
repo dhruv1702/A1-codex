@@ -7,6 +7,7 @@ from backend.schemas.business_state import BusinessState, compact_text, empty_bu
 
 
 BULLET_PATTERN = re.compile(r"^\s*[-*]\s+(?P<item>.+)$", re.MULTILINE)
+NUMBERED_ITEM_PATTERN = re.compile(r"^\s*\d+[\.\)]\s+(?P<item>.+)$", re.MULTILINE)
 
 
 def parse_note(source_id: str, title: str, text: str) -> BusinessState:
@@ -67,10 +68,11 @@ def _extract_bullets(text: str) -> List[str]:
     if matches:
         return matches
 
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    if len(lines) <= 1:
-        return []
-    return lines[1:]
+    numbered_matches = [match.group("item").strip() for match in NUMBERED_ITEM_PATTERN.finditer(text)]
+    if numbered_matches:
+        return numbered_matches
+
+    return []
 
 
 def _extract_commitment_and_trigger(bullet: str) -> Tuple[str, Optional[str]]:

@@ -123,15 +123,16 @@ def _extract_body(text: str) -> str:
 
 def _extract_company_name(text: str, contact_email: Optional[str]) -> Optional[str]:
     lines = [line.strip() for line in text.splitlines() if line.strip()]
+    signature_lines = lines[-4:]
 
-    for line in reversed(lines):
+    for line in reversed(signature_lines):
         if "@" in line or ":" in line:
             continue
         if "," in line:
             company_candidate = line.split(",", 1)[1].strip()
             if _looks_like_company(company_candidate):
                 return company_candidate
-        if _looks_like_company(line):
+        if _looks_like_company(line) and line[-1].isalnum():
             return line
 
     if not contact_email or "@" not in contact_email:

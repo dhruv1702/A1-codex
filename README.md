@@ -65,3 +65,12 @@ python3 backend/scripts/build_demo_business_state.py
 ```
 
 This writes the demo contract to [`backend/data/demo_inputs/business_state.json`](/Users/dhruvverma/Documents/Projects/A1-codex/backend/data/demo_inputs/business_state.json).
+
+Run backend ingestion tests:
+
+```bash
+cd /Users/dhruvverma/Documents/Projects/A1-codex
+python3 -m unittest discover -s backend/tests
+```
+
+Team handoff and contract rules live in [`backend/README.md`](/Users/dhruvverma/Documents/Projects/A1-codex/backend/README.md).
