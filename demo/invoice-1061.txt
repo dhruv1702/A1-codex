@@ -1,0 +1,7 @@
+Invoice #1061
+Customer: Harbor Fit
+Issue Date: 2026-03-18
+Due Date: 2026-04-01
+Amount Due: $3,180
+Status: Unpaid
+Notes: Payment on hold pending quantity correction dispute.
