@@ -11,7 +11,26 @@ PRIORITY_ORDER = {1: 0, 2: 1, 3: 2, 4: 3}
 
 def _theme_for_item(item: dict[str, Any]) -> str:
     text = f"{item.get('title', '')} {item.get('summary', '')}".lower()
-    if any(token in text for token in ("shipment", "eta", "delivery", "partial-ship", "partial ship", "launch")):
+    if any(
+        token in text
+        for token in ("call northline", "northline", "supplier escalation", "tuesday truck", "before 11:00", "internally")
+    ):
+        return "internal_escalation"
+    if any(
+        token in text
+        for token in (
+            "shipment",
+            "eta",
+            "delivery",
+            "partial-ship",
+            "partial ship",
+            "launch",
+            "customer update",
+            "same-day response",
+            "real date",
+            "soft promise",
+        )
+    ):
         return "customer_trust"
     if any(token in text for token in ("trust", "escalation", "complaint", "sensitive")):
         return "customer_trust"
@@ -52,12 +71,15 @@ def _dedupe_items(items: list[dict[str, Any]], receipt_map: dict[str, dict[str, 
 
 def _build_executive_summary(daily_brief: DailyBrief) -> list[str]:
     summary: list[str] = []
-    if daily_brief.risks:
-        summary.append(daily_brief.risks[0]["summary"])
+    if daily_brief.ops:
+        summary.append(f"Urgent: {daily_brief.ops[0]['summary']}")
+    elif daily_brief.risks:
+        summary.append(f"Urgent: {daily_brief.risks[0]['summary']}")
     if daily_brief.finance:
-        summary.append(daily_brief.finance[0]["summary"])
+        summary.append(f"Cash: {daily_brief.finance[0]['summary']}")
     if daily_brief.recommended_actions:
-        summary.append(f"{len(daily_brief.recommended_actions)} prioritized action(s) are ready for review.")
+        top_actions = ", ".join(action["title"] for action in daily_brief.recommended_actions[:3])
+        summary.append(f"Do next: {top_actions}.")
     return summary[:3]
 
 

@@ -7,6 +7,10 @@ interface ReceiptPanelProps {
 
 export function ReceiptPanel({ selectedInsight, receipts }: ReceiptPanelProps) {
   const linkedReceiptIds = new Set(selectedInsight?.receiptIds ?? []);
+  const visibleReceipts =
+    selectedInsight && linkedReceiptIds.size > 0
+      ? receipts.filter((receipt) => linkedReceiptIds.has(receipt.id))
+      : receipts;
 
   return (
     <section className="panel">
@@ -15,7 +19,7 @@ export function ReceiptPanel({ selectedInsight, receipts }: ReceiptPanelProps) {
           <p className="kicker">Evidence</p>
           <h2>Why this was recommended</h2>
         </div>
-        <span className="chip">{receipts.length} receipts</span>
+        <span className="chip">{visibleReceipts.length} receipts</span>
       </div>
 
       {selectedInsight ? (
@@ -37,7 +41,7 @@ export function ReceiptPanel({ selectedInsight, receipts }: ReceiptPanelProps) {
       )}
 
       <div className="receipt-list">
-        {receipts.map((receipt) => (
+        {visibleReceipts.map((receipt) => (
           <article
             className={`receipt-item${linkedReceiptIds.has(receipt.id) ? " is-highlighted" : ""}`}
             key={receipt.id}

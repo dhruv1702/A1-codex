@@ -108,6 +108,41 @@ def run_inbox_agent(business_state: dict[str, Any]) -> dict[str, Any]:
             }
         )
 
+        supplier_rule_receipt = rules["supplier_escalation"]
+        if supplier_rule_receipt:
+            supplier_receipt_ids = [
+                receipt["id"]
+                for receipt in (issue_receipt, deadline_receipt, supplier_rule_receipt)
+                if receipt
+            ]
+            supplier_action_id = f"inbox-supplier-check-{slugify(customer)}"
+            ops.append(
+                {
+                    "id": supplier_action_id,
+                    "title": f"Call Northline before 11:00 for the {customer} delay",
+                    "summary": "Confirm whether stock missed the Tuesday truck before locking the customer ETA.",
+                    "priority": 1,
+                    "receipt_ids": supplier_receipt_ids,
+                    "owner": "ops",
+                    "due": "before 11:00",
+                    "source_agents": ["inbox_agent"],
+                    "status": "open",
+                }
+            )
+            recommended_actions.append(
+                {
+                    "id": f"action-{supplier_action_id}",
+                    "title": f"Escalate the {customer} shipment internally before replying",
+                    "summary": "Use the Northline escalation rule now, then send the revised ETA once inventory timing is confirmed.",
+                    "priority": 1,
+                    "receipt_ids": supplier_receipt_ids,
+                    "owner": "ops",
+                    "due": "before 11:00",
+                    "source_agents": ["inbox_agent"],
+                    "status": "pending_review",
+                }
+            )
+
     return {
         "agent": "inbox_agent",
         "executive_summary": [

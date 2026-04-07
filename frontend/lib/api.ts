@@ -394,13 +394,20 @@ function buildWhyItMatters(
   receiptMap: Map<string, BackendReceipt>,
 ): string[] {
   const receiptReasons = (item.receipt_ids ?? [])
-    .map((receiptId) => receiptMap.get(receiptId)?.title)
-    .filter(Boolean) as string[];
+    .map((receiptId) => receiptMap.get(receiptId))
+    .filter((receipt): receipt is BackendReceipt => Boolean(receipt))
+    .map((receipt) => {
+      const excerpt = receipt.excerpt.trim();
+      if (excerpt.length <= 140) {
+        return excerpt;
+      }
+      return `${excerpt.slice(0, 137).trimEnd()}...`;
+    });
 
   return unique(
     [
-      item.due ? `Suggested timing: ${normalizeStatus(item.due)}` : null,
-      item.owner ? `Suggested owner: ${titleCase(item.owner.replaceAll("_", " "))}` : null,
+      item.due ? `Timing: ${normalizeStatus(item.due)}` : null,
+      item.owner ? `Owner: ${titleCase(item.owner.replaceAll("_", " "))}` : null,
       ...receiptReasons,
     ].filter(Boolean) as string[],
   ).slice(0, 3);

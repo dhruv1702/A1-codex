@@ -1,8 +1,8 @@
 {
   "executive_summary": [
-    "The account is launch-sensitive and the founder note says this relationship has low tolerance for vague updates.",
-    "Bluebird Home still owes $4,860 and no reminder has been sent.",
-    "2 prioritized action(s) are ready for review."
+    "Urgent: Maya Patel needs a direct shipment ETA today and asked for an honest status update.",
+    "Cash: Bluebird Home still owes $4,860 and no reminder has been sent.",
+    "Do next: Escalate the ACME Retail shipment internally before replying, Send ACME Retail a factual shipment update today, Send payment follow-up for invoice #1042."
   ],
   "ops": [
     {
@@ -21,6 +21,23 @@
       ],
       "owner": "ops",
       "due": "today",
+      "source_agents": [
+        "inbox_agent"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "inbox-supplier-check-acme-retail",
+      "title": "Call Northline before 11:00 for the ACME Retail delay",
+      "summary": "Confirm whether stock missed the Tuesday truck before locking the customer ETA.",
+      "priority": 1,
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-is-waiting-on-a-shipment-update-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-requested-a-realistic-eta-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-supplier-escalation-rule-stock-is-missing-from-the-tuesday-truck-call-no"
+      ],
+      "owner": "ops",
+      "due": "before 11:00",
       "source_agents": [
         "inbox_agent"
       ],
@@ -115,6 +132,23 @@
     }
   ],
   "recommended_actions": [
+    {
+      "id": "action-inbox-supplier-check-acme-retail",
+      "title": "Escalate the ACME Retail shipment internally before replying",
+      "summary": "Use the Northline escalation rule now, then send the revised ETA once inventory timing is confirmed.",
+      "priority": 1,
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-is-waiting-on-a-shipment-update-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-requested-a-realistic-eta-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-supplier-escalation-rule-stock-is-missing-from-the-tuesday-truck-call-no"
+      ],
+      "owner": "ops",
+      "due": "before 11:00",
+      "source_agents": [
+        "inbox_agent"
+      ],
+      "status": "pending_review"
+    },
     {
       "id": "action-inbox-waiting-acme-retail",
       "title": "Send ACME Retail a factual shipment update today",
