@@ -1,0 +1,29 @@
+name: Backend Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  backend-contract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile backend Python files
+        run: python -m py_compile $(find backend -type f -name '*.py' | sort)
+
+      - name: Build demo business state
+        run: python backend/scripts/build_demo_business_state.py
+
+      - name: Run backend ingestion tests
+        run: python -m unittest discover -s backend/tests
