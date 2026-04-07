@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BriefCard } from "@/components/BriefCard";
-import { DraftPanel } from "@/components/DraftPanel";
-import { ReceiptPanel } from "@/components/ReceiptPanel";
 import { InputSourceType, QueuedInputFile, UploadBox } from "@/components/UploadBox";
 import {
-  DailyBriefInput,
   BriefSectionItem,
   DailyBrief,
+  DailyBriefInput,
+  DraftItem,
+  ReceiptItem,
   RecommendedAction,
   SelectableInsight,
   fetchDailyBrief,
@@ -38,21 +38,60 @@ const demoFiles: QueuedInputFile[] = [
 const demoPasteText =
   "Founder note: keep customer updates specific, make recommendation reasons easy to inspect, and review any company record updates before applying them.";
 
+function findLinkedReceipts(
+  selectedInsight: SelectableInsight | null,
+  receipts: ReceiptItem[],
+): ReceiptItem[] {
+  const linkedReceiptIds = new Set(selectedInsight?.receiptIds ?? []);
+  return receipts.filter((receipt) => linkedReceiptIds.has(receipt.id));
+}
+
+function findActiveDraft(
+  selectedInsight: SelectableInsight | null,
+  drafts: DraftItem[],
+): DraftItem | null {
+  if (drafts.length === 0) {
+    return null;
+  }
+
+  if (!selectedInsight) {
+    return drafts[0];
+  }
+
+  const directMatch = drafts.find((draft) => draft.relatedActionId === selectedInsight.id);
+  if (directMatch) {
+    return directMatch;
+  }
+
+  const linkedReceiptIds = new Set(selectedInsight.receiptIds);
+  const receiptMatch = drafts.find((draft) =>
+    draft.receiptIds.some((receiptId) => linkedReceiptIds.has(receiptId)),
+  );
+  if (receiptMatch) {
+    return receiptMatch;
+  }
+
+  return drafts[0];
+}
+
 export default function Page() {
   const bootedFromQuery = useRef(false);
   const [queuedFiles, setQueuedFiles] = useState<QueuedInputFile[]>([]);
   const [pastedText, setPastedText] = useState("");
   const [voiceTranscript, setVoiceTranscript] = useState("");
   const [pastedTextSourceType, setPastedTextSourceType] = useState<InputSourceType>("auto");
-  const [voiceTranscriptSourceType, setVoiceTranscriptSourceType] = useState<InputSourceType>("note");
+  const [voiceTranscriptSourceType, setVoiceTranscriptSourceType] =
+    useState<InputSourceType>("note");
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [brief, setBrief] = useState<DailyBrief | null>(null);
   const [selectedInsight, setSelectedInsight] = useState<SelectableInsight | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [askValue, setAskValue] = useState("");
 
-  const titleForInlineInput = (kind: "pasted" | "voice", sourceType: InputSourceType): string => {
+  const titleForInlineInput = (
+    kind: "pasted" | "voice",
+    sourceType: InputSourceType,
+  ): string => {
     if (kind === "voice") {
       if (sourceType === "email") {
         return "Voice-dictated customer email";
@@ -85,7 +124,8 @@ export default function Page() {
         sourceId: file.id,
         title: file.name,
         text: file.text ?? "",
-        sourceType: file.sourceType && file.sourceType !== "auto" ? file.sourceType : undefined,
+        sourceType:
+          file.sourceType && file.sourceType !== "auto" ? file.sourceType : undefined,
       }));
 
     const textInputs: DailyBriefInput[] = [];
@@ -104,7 +144,8 @@ export default function Page() {
         sourceId: "voice-note",
         title: titleForInlineInput("voice", voiceTranscriptSourceType),
         text: voiceTranscript.trim(),
-        sourceType: voiceTranscriptSourceType !== "auto" ? voiceTranscriptSourceType : undefined,
+        sourceType:
+          voiceTranscriptSourceType !== "auto" ? voiceTranscriptSourceType : undefined,
       });
     }
 
@@ -117,14 +158,16 @@ export default function Page() {
 
     try {
       const nextBrief = await fetchDailyBrief(
-        options?.useMock || isDemoMode
-          ? { useMock: true }
-          : { inputs: buildLiveInputs() },
+        options?.useMock || isDemoMode ? { useMock: true } : { inputs: buildLiveInputs() },
       );
       setBrief(nextBrief);
-      setSelectedInsight(nextBrief.recommendedActions[0] ?? nextBrief.cards.ops.items[0] ?? null);
+      setSelectedInsight(
+        nextBrief.recommendedActions[0] ?? nextBrief.cards.ops.items[0] ?? null,
+      );
     } catch (runError) {
-      setError(runError instanceof Error ? runError.message : "Unable to load the daily brief.");
+      setError(
+        runError instanceof Error ? runError.message : "Unable to load the daily brief.",
+      );
     } finally {
       setIsRunning(false);
     }
@@ -133,7 +176,9 @@ export default function Page() {
   const handleLoadDemo = () => {
     setQueuedFiles(demoFiles);
     setPastedText(demoPasteText);
-    setVoiceTranscript("Please summarize what needs review today and show why each recommendation was made.");
+    setVoiceTranscript(
+      "Please summarize what needs review today and show why each recommendation was made.",
+    );
     setPastedTextSourceType("note");
     setVoiceTranscriptSourceType("note");
     setIsDemoMode(true);
@@ -182,7 +227,12 @@ export default function Page() {
     }
   }, []);
 
-  const renderActionItem = (action: RecommendedAction) => {
+  const linkedReceipts = brief ? findLinkedReceipts(selectedInsight, brief.receipts) : [];
+  const activeDraft = brief ? findActiveDraft(selectedInsight, brief.drafts) : null;
+  const selectedAction =
+    brief?.recommendedActions.find((action) => action.id === selectedInsight?.id) ?? null;
+
+  const renderActionItem = (action: RecommendedAction, index: number) => {
     const isSelected = selectedInsight?.id === action.id;
 
     return (
@@ -192,25 +242,21 @@ export default function Page() {
         type="button"
         onClick={() => setSelectedInsight(action)}
       >
-        <div className="todo-row">
-          <span className="todo-marker" aria-hidden="true">
-            {action.requiresReview ? "○" : "✓"}
-          </span>
-          <div className="todo-body">
-            <div className="action-head">
-              <div>
-                <strong className="card-item-title">{action.title}</strong>
-                <p className="action-rationale">{action.rationale}</p>
-              </div>
-              <span className="action-priority" data-priority={action.priority}>
-                {action.priority}
-              </span>
+        <div className="agenda-index">{String(index + 1).padStart(2, "0")}</div>
+        <div className="todo-body">
+          <div className="action-head">
+            <div>
+              <strong className="card-item-title">{action.title}</strong>
+              <p className="action-rationale">{action.rationale}</p>
             </div>
-            <div className="tag-row">
-              <span className="tag">{action.status}</span>
-              <span className="tag">{action.owner}</span>
-              <span className="tag">{action.requiresReview ? "Needs review" : "Ready"}</span>
-            </div>
+            <span className="action-priority" data-priority={action.priority}>
+              {action.priority}
+            </span>
+          </div>
+          <div className="tag-row">
+            <span className="tag">{action.owner}</span>
+            <span className="tag">{action.status}</span>
+            <span className="tag">{action.requiresReview ? "Needs review" : "Ready"}</span>
           </div>
         </div>
       </button>
@@ -236,12 +282,12 @@ export default function Page() {
   return (
     <main className="page-shell">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">SMB ops copilot prototype</p>
-          <h1>Daily operating brief</h1>
+        <div className="headline-lockup">
+          <p className="eyebrow">Inbox to Ops Brief</p>
+          <h1>Today&apos;s operator desk</h1>
           <p className="topbar-copy">
-            Turn uploaded notes, copied text, and optional voice input into a calm, reviewable
-            summary of what needs attention today.
+            Work one business issue at a time. Keep the next move, the reply draft, and the exact
+            receipts in one place.
           </p>
         </div>
 
@@ -251,68 +297,23 @@ export default function Page() {
             <p className="meta-value">{brief?.briefDate ?? "Waiting for input"}</p>
           </div>
           <div className="meta-card">
-            <p className="meta-label">Current state</p>
-            <p className="meta-value">{brief ? "Brief ready" : "Pre-run"}</p>
+            <p className="meta-label">Operator queue</p>
+            <p className="meta-value">{brief ? `${brief.recommendedActions.length} actions` : "Not built"}</p>
           </div>
           <div className="meta-card">
-            <p className="meta-label">Review stance</p>
-            <p className="meta-value">Suggested, not sent</p>
+            <p className="meta-label">Drafts ready</p>
+            <p className="meta-value">{brief ? `${brief.drafts.length} prepared` : "Pending"}</p>
           </div>
         </div>
       </header>
 
-      <div className="workspace">
-        <section>
-          <section className="panel summary-panel">
-            <div className="summary-head">
-              <div>
-                <p className="kicker">Executive summary</p>
-                <h2>{brief?.reportTitle ?? "What needs attention today"}</h2>
-              </div>
-              {brief ? <span className="chip">Evidence-backed</span> : null}
-            </div>
-
-            {brief ? (
-              <>
-                <div className="summary-grid">
-                  <div>
-                    <h3 className="summary-title">{brief.executiveSummary.headline}</h3>
-                    <p className="summary-copy">{brief.executiveSummary.body}</p>
-                  </div>
-                  <div className="summary-points">
-                    {brief.executiveSummary.keyPoints.map((point) => (
-                      <div className="summary-point" key={point.label}>
-                        <strong>{point.label}</strong>
-                        <span>{point.value}</span>
-                        <span>{point.detail}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="status-line">
-                  {brief.agentRuns.map((agent) => (
-                    <span className="status-pill" key={agent.id}>
-                      <span className="status-dot" aria-hidden="true" />
-                      {agent.label}
-                    </span>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="summary-copy">
-                Run the daily brief after adding a few sample inputs. The resulting view will show
-                suggested actions, supporting evidence, prepared drafts, and any record updates
-                that should be reviewed by a human.
-              </p>
-            )}
-          </section>
-
+      <div className="operator-layout">
+        <aside className="left-rail">
           <section className="panel action-panel">
-            <div className="action-head">
+            <div className="panel-head">
               <div>
-                <p className="kicker">Recommended actions</p>
-                <h2>Today&apos;s to-do list</h2>
+                <p className="kicker">Today&apos;s agenda</p>
+                <h2>Do these next</h2>
               </div>
               <span className="chip">
                 {brief ? `${brief.recommendedActions.length} suggestions` : "Waiting"}
@@ -325,8 +326,8 @@ export default function Page() {
               <div className="action-list">{brief.recommendedActions.map(renderActionItem)}</div>
             ) : (
               <p className="helper-copy">
-                Recommendations will appear here after the brief is prepared. Each item will show
-                why it is being suggested and what still needs review.
+                Load the demo set or add inputs, then run the brief. The left rail becomes your
+                operating queue once the brief is compiled.
               </p>
             )}
           </section>
@@ -346,21 +347,215 @@ export default function Page() {
             onLoadDemo={handleLoadDemo}
             isRunning={isRunning}
           />
+        </aside>
 
-          {brief ? <div className="brief-grid">{(["ops", "finance", "comms", "risks"] as const).map(renderCard)}</div> : null}
-
-          <section className="panel updates-panel">
-            <div className="update-head">
+        <section className="operator-main">
+          <section className="panel hero-panel">
+            <div className="hero-head">
               <div>
-                <p className="kicker">Proposed updates</p>
-                <h2>Needs confirmation</h2>
+                <p className="kicker">
+                  {selectedAction ? "Current priority" : brief ? "Selected signal" : "Daily brief"}
+                </p>
+                <h2>{selectedInsight?.title ?? brief?.reportTitle ?? "What needs attention today"}</h2>
               </div>
-              <span className="chip">
-                {brief ? `${brief.proposedUpdates.length} review items` : "Pending"}
-              </span>
+              {brief ? (
+                <div className="hero-badges">
+                  {selectedAction ? (
+                    <>
+                      <span className="chip">{selectedAction.priority} priority</span>
+                      <span className="chip">{selectedAction.owner}</span>
+                      <span className="chip">{selectedAction.status}</span>
+                    </>
+                  ) : (
+                    <span className="chip">Select an agenda item</span>
+                  )}
+                </div>
+              ) : null}
             </div>
 
             {brief ? (
+              <>
+                <div className="hero-grid">
+                  <div>
+                    <h3 className="summary-title">{brief.executiveSummary.headline}</h3>
+                    <p className="summary-copy">
+                      {selectedInsight?.rationale ?? brief.executiveSummary.body}
+                    </p>
+                    <div className="status-line">
+                      {brief.agentRuns.map((agent) => (
+                        <span className="status-pill" key={agent.id}>
+                          <span className="status-dot" aria-hidden="true" />
+                          {agent.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="summary-points">
+                    {brief.executiveSummary.keyPoints.map((point) => (
+                      <div className="summary-point" key={point.label}>
+                        <strong>{point.label}</strong>
+                        <span>{point.value}</span>
+                        <span>{point.detail}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="summary-copy">
+                Start with three messy inputs: one customer message, one invoice, and one note or
+                SOP. The workspace will turn into a single operating surface once the brief is
+                ready.
+              </p>
+            )}
+          </section>
+
+          {brief ? (
+            <div className="focus-grid">
+              <section className="panel focus-panel">
+                <div className="panel-head">
+                  <div>
+                    <p className="kicker">Why this is on today&apos;s desk</p>
+                    <h3>Working notes</h3>
+                  </div>
+                  <span className="chip">
+                    {selectedInsight ? `${selectedInsight.receiptIds.length} linked sources` : "No selection"}
+                  </span>
+                </div>
+
+                {selectedInsight ? (
+                  <>
+                    <div className="focus-lead">
+                      <strong className="focus-title">{selectedInsight.title}</strong>
+                      <p className="focus-copy">{selectedInsight.rationale}</p>
+                    </div>
+                    <div className="reason-list">
+                      {selectedInsight.whyItMatters.map((reason) => (
+                        <div className="reason-item" key={reason}>
+                          <span className="reason-marker" aria-hidden="true">
+                            /
+                          </span>
+                          <p>{reason}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="helper-copy">
+                    Pick an action or lane item to turn this area into the working context for that
+                    issue.
+                  </p>
+                )}
+              </section>
+
+              <section className="panel draft-stage">
+                <div className="panel-head">
+                  <div>
+                    <p className="kicker">Prepared reply</p>
+                    <h3>Draft for review</h3>
+                  </div>
+                  <span className="chip">{activeDraft ? activeDraft.reviewStatus : "No linked draft"}</span>
+                </div>
+
+                {activeDraft ? (
+                  <>
+                    <div className="draft-stage-head">
+                      <div>
+                        <strong className="draft-title">{activeDraft.title}</strong>
+                        <p className="draft-copy">{activeDraft.summary}</p>
+                      </div>
+                      <div className="tag-row">
+                        <span className="tag">{activeDraft.channel}</span>
+                        <span className="tag">Human review</span>
+                      </div>
+                    </div>
+                    <pre className="draft-body">{activeDraft.body}</pre>
+                    <div className="tag-row">
+                      {activeDraft.sourceLabels.map((label) => (
+                        <span className="tag" key={label}>
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="helper-copy">
+                    No draft is linked to the current selection yet. Customer-facing drafts appear
+                    here when the brief has one ready.
+                  </p>
+                )}
+              </section>
+            </div>
+          ) : null}
+
+          {brief ? (
+            <section className="panel evidence-panel-inline">
+              <div className="panel-head">
+                <div>
+                  <p className="kicker">Evidence trail</p>
+                  <h3>Exact excerpts behind the current move</h3>
+                </div>
+                <span className="chip">
+                  {selectedInsight ? `${linkedReceipts.length} linked` : "Select an item"}
+                </span>
+              </div>
+
+              {selectedInsight ? (
+                <div className="evidence-grid">
+                  {linkedReceipts.map((receipt) => (
+                    <article className="evidence-card" key={receipt.id}>
+                      <div className="receipt-head">
+                        <div>
+                          <strong className="receipt-title">{receipt.title}</strong>
+                          <div className="receipt-meta">
+                            <span className="tag">{receipt.kind}</span>
+                            <span className="tag">{receipt.sourceName}</span>
+                          </div>
+                        </div>
+                        <span className="chip">{receipt.reference}</span>
+                      </div>
+                      <p className="receipt-copy">{receipt.summary}</p>
+                      <div className="evidence-quote">
+                        <span className="evidence-label">Source excerpt</span>
+                        <p>{receipt.excerpt}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="helper-copy">
+                  Select an action or lane item to inspect the exact source material behind it.
+                </p>
+              )}
+            </section>
+          ) : null}
+
+          {brief ? (
+            <section className="lane-section">
+              <div className="lane-head">
+                <div>
+                  <p className="kicker">Secondary scan</p>
+                  <h2>Ops, finance, customer comms, and risks</h2>
+                </div>
+                <span className="chip">4 lanes</span>
+              </div>
+              <div className="brief-grid">
+                {(["ops", "finance", "comms", "risks"] as const).map(renderCard)}
+              </div>
+            </section>
+          ) : null}
+
+          {brief && brief.proposedUpdates.length > 0 ? (
+            <section className="panel updates-panel">
+              <div className="update-head">
+                <div>
+                  <p className="kicker">Review queue</p>
+                  <h2>Confirm before updating records</h2>
+                </div>
+                <span className="chip">{brief.proposedUpdates.length} items</span>
+              </div>
+
               <div className="update-list">
                 {brief.proposedUpdates.map((update) => (
                   <article className="update-item" key={update.id}>
@@ -376,37 +571,9 @@ export default function Page() {
                   </article>
                 ))}
               </div>
-            ) : (
-              <p className="helper-copy">
-                Proposed company or database updates will be shown as reviewable suggestions only.
-              </p>
-            )}
-          </section>
-
-          <section className="panel ask-panel">
-            <div className="panel-head">
-              <div>
-                <p className="kicker">Ask box</p>
-                <h2>Ask your business...</h2>
-              </div>
-            </div>
-            <textarea
-              className="ask-input"
-              placeholder="Example: What should I review before replying to ACME Retail?"
-              value={askValue}
-              onChange={(event) => setAskValue(event.target.value)}
-            />
-            <p className="ask-footnote">
-              This demo keeps the ask box lightweight. It is present as a UX surface and does not
-              imply a live multi-turn backend yet.
-            </p>
-          </section>
+            </section>
+          ) : null}
         </section>
-
-        <div className="right-rail">
-          <ReceiptPanel selectedInsight={selectedInsight} receipts={brief?.receipts ?? []} />
-          <DraftPanel drafts={brief?.drafts ?? []} />
-        </div>
       </div>
     </main>
   );

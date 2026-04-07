@@ -46,6 +46,8 @@ export interface DraftItem {
   summary: string;
   body: string;
   sourceLabels: string[];
+  relatedActionId: string | null;
+  receiptIds: string[];
 }
 
 export interface ProposedUpdate {
@@ -374,6 +376,8 @@ function adaptDraft(
     summary: summarizeDraft(draft),
     body: draft.body,
     sourceLabels,
+    relatedActionId: draft.related_action_id ?? null,
+    receiptIds: draft.receipt_ids ?? [],
   };
 }
 

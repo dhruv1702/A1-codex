@@ -214,17 +214,6 @@ export function UploadBox({
       </div>
 
       <div className="intake-grid">
-        <div className="telegram-placeholder">
-          <div>
-            <p className="kicker">Future input channel</p>
-            <h3>Telegram bot placeholder</h3>
-          </div>
-          <p className="helper-copy">
-            This can also be triggered from a Telegram bot that gathers owner messages, email pulls,
-            and other business inputs before preparing the same reviewable brief.
-          </p>
-        </div>
-
         <div className="accordion-list">
           <details className="input-accordion" open>
             <summary className="input-accordion-summary">
@@ -387,13 +376,22 @@ export function UploadBox({
         </div>
 
         <div className="run-row">
-          <button className="button button-primary" type="button" onClick={onRun} disabled={isRunning}>
+          <button
+            className="button button-primary"
+            type="button"
+            onClick={onRun}
+            disabled={isRunning}
+          >
             {isRunning ? "Preparing brief..." : "Run Daily Brief"}
           </button>
           <span className="helper-copy">
             The output stays reviewable and does not imply anything was sent or updated automatically.
           </span>
         </div>
+
+        <p className="intake-note">
+          If auto-detection is wrong, force the source type here before running the brief.
+        </p>
 
         {!hasInputs ? (
           <div className="helper-copy">
