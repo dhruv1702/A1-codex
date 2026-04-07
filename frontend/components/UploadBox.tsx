@@ -159,94 +159,115 @@ export function UploadBox({
           </p>
         </div>
 
-        <div
-          className={`upload-zone${isDragging ? " drag-active" : ""}`}
-          onDragEnter={(event) => {
-            event.preventDefault();
-            setIsDragging(true);
-          }}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setIsDragging(true);
-          }}
-          onDragLeave={(event) => {
-            event.preventDefault();
-            setIsDragging(false);
-          }}
-          onDrop={(event) => {
-            event.preventDefault();
-            setIsDragging(false);
-            if (event.dataTransfer.files.length > 0) {
-              void addFiles(event.dataTransfer.files);
-            }
-          }}
-        >
-          <input
-            id={inputId}
-            ref={fileInputRef}
-            type="file"
-            multiple
-            onChange={(event) => {
-              if (event.target.files) {
-                void addFiles(event.target.files);
-              }
-            }}
-          />
-          <div className="input-actions">
-            <label className="upload-trigger" htmlFor={inputId}>
-              Upload files
-            </label>
-            <span className="upload-note">
-              Drop notes, invoices, exports, or demo files here to prepare the brief.
-            </span>
-          </div>
-
-          {queuedFiles.length > 0 ? (
-            <div className="upload-list">
-              {queuedFiles.map((file) => (
-                <div className="upload-item" key={file.id}>
-                  <strong>{file.name}</strong>
-                  <span>{file.sizeLabel}</span>
+        <div className="accordion-list">
+          <details className="input-accordion" open>
+            <summary className="input-accordion-summary">
+              <div>
+                <p className="kicker">Uploaded files</p>
+                <h3>Documents and exports</h3>
+              </div>
+              <span className="chip">{queuedFiles.length} files</span>
+            </summary>
+            <div className="input-accordion-body">
+              <div
+                className={`upload-zone${isDragging ? " drag-active" : ""}`}
+                onDragEnter={(event) => {
+                  event.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={(event) => {
+                  event.preventDefault();
+                  setIsDragging(false);
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  setIsDragging(false);
+                  if (event.dataTransfer.files.length > 0) {
+                    void addFiles(event.dataTransfer.files);
+                  }
+                }}
+              >
+                <input
+                  id={inputId}
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  onChange={(event) => {
+                    if (event.target.files) {
+                      void addFiles(event.target.files);
+                    }
+                  }}
+                />
+                <div className="input-actions">
+                  <label className="upload-trigger" htmlFor={inputId}>
+                    Upload files
+                  </label>
+                  <span className="upload-note">
+                    Drop notes, invoices, exports, or demo files here to prepare the brief.
+                  </span>
                 </div>
-              ))}
-            </div>
-          ) : null}
-        </div>
 
-        <div>
-          <div className="panel-head">
-            <div>
-              <p className="kicker">Paste text</p>
-              <h3>Notes or copied messages</h3>
+                {queuedFiles.length > 0 ? (
+                  <div className="upload-list">
+                    {queuedFiles.map((file) => (
+                      <div className="upload-item" key={file.id}>
+                        <strong>{file.name}</strong>
+                        <span>{file.sizeLabel}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="helper-copy">No files queued yet.</p>
+                )}
+              </div>
             </div>
-          </div>
-          <textarea
-            className="paste-box"
-            placeholder="Paste a customer email, founder note, invoice summary, or operating context."
-            value={pastedText}
-            onChange={(event) => onPastedTextChange(event.target.value)}
-          />
-        </div>
+          </details>
 
-        <div>
-          <div className="panel-head">
-            <div>
-              <p className="kicker">Voice input</p>
-              <h3>Optional voice note</h3>
+          <details className="input-accordion" open={Boolean(pastedText)}>
+            <summary className="input-accordion-summary">
+              <div>
+                <p className="kicker">Paste text</p>
+                <h3>Notes or copied messages</h3>
+              </div>
+              <span className="chip">{pastedText.trim() ? "Added" : "Empty"}</span>
+            </summary>
+            <div className="input-accordion-body">
+              <textarea
+                className="paste-box"
+                placeholder="Paste a customer email, founder note, invoice summary, or operating context."
+                value={pastedText}
+                onChange={(event) => onPastedTextChange(event.target.value)}
+              />
             </div>
-          </div>
-          <div className="mic-row">
-            <button className="button button-outline" type="button" onClick={handleMic}>
-              {isRecording ? "Stop listening" : "Use microphone"}
-            </button>
-            <span className="helper-copy">{micMessage}</span>
-          </div>
-          <textarea
-            className="paste-box"
-            placeholder="Voice transcript will appear here for review."
-            value={voiceTranscript}
-            onChange={(event) => onVoiceTranscriptChange(event.target.value)}
-          />
+          </details>
+
+          <details className="input-accordion" open={Boolean(voiceTranscript)}>
+            <summary className="input-accordion-summary">
+              <div>
+                <p className="kicker">Voice input</p>
+                <h3>Optional voice note</h3>
+              </div>
+              <span className="chip">{voiceTranscript.trim() ? "Captured" : "Optional"}</span>
+            </summary>
+            <div className="input-accordion-body">
+              <div className="mic-row">
+                <button className="button button-outline" type="button" onClick={handleMic}>
+                  {isRecording ? "Stop listening" : "Use microphone"}
+                </button>
+                <span className="helper-copy">{micMessage}</span>
+              </div>
+              <textarea
+                className="paste-box"
+                placeholder="Voice transcript will appear here for review."
+                value={voiceTranscript}
+                onChange={(event) => onVoiceTranscriptChange(event.target.value)}
+              />
+            </div>
+          </details>
         </div>
 
         <div className="run-row">

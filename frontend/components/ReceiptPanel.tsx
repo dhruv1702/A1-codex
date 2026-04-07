@@ -7,10 +7,7 @@ interface ReceiptPanelProps {
 
 export function ReceiptPanel({ selectedInsight, receipts }: ReceiptPanelProps) {
   const linkedReceiptIds = new Set(selectedInsight?.receiptIds ?? []);
-  const visibleReceipts =
-    selectedInsight && linkedReceiptIds.size > 0
-      ? receipts.filter((receipt) => linkedReceiptIds.has(receipt.id))
-      : receipts;
+  const linkedReceipts = receipts.filter((receipt) => linkedReceiptIds.has(receipt.id));
 
   return (
     <section className="panel">
@@ -19,7 +16,7 @@ export function ReceiptPanel({ selectedInsight, receipts }: ReceiptPanelProps) {
           <p className="kicker">Evidence</p>
           <h2>Why this was recommended</h2>
         </div>
-        <span className="chip">{visibleReceipts.length} receipts</span>
+        <span className="chip">{selectedInsight ? `${linkedReceipts.length} linked` : "Select an item"}</span>
       </div>
 
       {selectedInsight ? (
@@ -40,32 +37,31 @@ export function ReceiptPanel({ selectedInsight, receipts }: ReceiptPanelProps) {
         <div className="focus-panel empty">Select a recommendation or card item to inspect the supporting receipts.</div>
       )}
 
-      <div className="receipt-list">
-        {visibleReceipts.map((receipt) => (
-          <article
-            className={`receipt-item${linkedReceiptIds.has(receipt.id) ? " is-highlighted" : ""}`}
-            key={receipt.id}
-          >
-            <div className="receipt-head">
-              <div>
-                <strong className="receipt-title">{receipt.title}</strong>
-                <div className="receipt-meta">
-                  <span className="tag">{receipt.kind}</span>
-                  <span className="tag">{receipt.sourceName}</span>
+      {selectedInsight ? (
+        <div className="receipt-list">
+          {linkedReceipts.map((receipt) => (
+            <article className="receipt-item is-highlighted" key={receipt.id}>
+              <div className="receipt-head">
+                <div>
+                  <strong className="receipt-title">{receipt.title}</strong>
+                  <div className="receipt-meta">
+                    <span className="tag">{receipt.kind}</span>
+                    <span className="tag">{receipt.sourceName}</span>
+                  </div>
+                </div>
+                <span className="chip">{receipt.reference}</span>
+              </div>
+              <p className="receipt-copy">{receipt.summary}</p>
+              <div className="evidence-stack">
+                <div className="evidence-quote">
+                  <span className="evidence-label">Source excerpt</span>
+                  <p>{receipt.excerpt}</p>
                 </div>
               </div>
-              <span className="chip">{receipt.reference}</span>
-            </div>
-            <p className="receipt-copy">{receipt.summary}</p>
-            <div className="evidence-stack">
-              <div className="evidence-quote">
-                <span className="evidence-label">Source excerpt</span>
-                <p>{receipt.excerpt}</p>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
