@@ -25,5 +25,11 @@ jobs:
       - name: Build demo business state
         run: python backend/scripts/build_demo_business_state.py
 
+      - name: Build full demo bundle
+        run: python backend/scripts/build_demo_bundle.py
+
       - name: Run backend ingestion tests
         run: python -m unittest discover -s backend/tests
+
+      - name: Verify generated demo artifacts are committed
+        run: git diff --exit-code -- backend/data/demo_inputs/business_state.json backend/data/demo_inputs/daily_brief.json frontend/public/demo/daily_brief.json

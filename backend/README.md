@@ -48,6 +48,13 @@ cd /Users/dhruvverma/Documents/Projects/A1-codex
 python3 backend/scripts/build_demo_business_state.py
 ```
 
+Build the full demo bundle, including frontend-facing `daily_brief.json`:
+
+```bash
+cd /Users/dhruvverma/Documents/Projects/A1-codex
+python3 backend/scripts/build_demo_bundle.py
+```
+
 Run backend ingestion tests:
 
 ```bash

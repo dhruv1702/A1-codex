@@ -37,6 +37,33 @@ Helpful deep links:
 - `http://127.0.0.1:4173/?demo=1` loads the seeded files
 - `http://127.0.0.1:4173/?demo=1&compiled=1` opens directly into the compiled operator brief
 
+## Full demo path
+
+Regenerate the backend demo artifacts used by both the backend and the Next.js frontend:
+
+```bash
+cd /Users/dhruvverma/Documents/Projects/A1-codex
+python3 backend/scripts/build_demo_bundle.py
+```
+
+This writes:
+
+- [`backend/data/demo_inputs/business_state.json`](/Users/dhruvverma/Documents/Projects/A1-codex/backend/data/demo_inputs/business_state.json)
+- [`backend/data/demo_inputs/daily_brief.json`](/Users/dhruvverma/Documents/Projects/A1-codex/backend/data/demo_inputs/daily_brief.json)
+- [`frontend/public/demo/daily_brief.json`](/Users/dhruvverma/Documents/Projects/A1-codex/frontend/public/demo/daily_brief.json)
+
+Run the frontend app:
+
+```bash
+cd /Users/dhruvverma/Documents/Projects/A1-codex/frontend
+npm install
+npm run dev
+```
+
+Frontend demo deep link:
+
+- `http://127.0.0.1:3000/?demo=1&run=1`
+
 ## Notes
 
 - The prototype intentionally stays lightweight: no integrations, no vector DB, no autonomous actions.

@@ -1,0 +1,308 @@
+{
+  "executive_summary": [
+    "The account is launch-sensitive and the founder note says this relationship has low tolerance for vague updates.",
+    "Bluebird Home still owes $4,860 and no reminder has been sent.",
+    "2 prioritized action(s) are ready for review."
+  ],
+  "ops": [
+    {
+      "id": "inbox-waiting-acme-retail",
+      "title": "ACME Retail is waiting on an update",
+      "summary": "Maya Patel needs a direct shipment ETA today and asked for an honest status update.",
+      "priority": 1,
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-is-waiting-on-a-shipment-update-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-requested-a-realistic-eta-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-asked-about-a-partial-delivery-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-delay-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-partial-shipment-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-supplier-escalation-rule-stock-is-missing-from-the-tuesday-truck-call-no",
+        "receipt-note-founder-fulfillment-sensitive-account-note-acme-account-is-sensitive-after-the-february-pac"
+      ],
+      "owner": "ops",
+      "due": "today",
+      "source_agents": [
+        "inbox_agent"
+      ],
+      "status": "open"
+    }
+  ],
+  "finance": [
+    {
+      "id": "finance-overdue-1042",
+      "title": "Invoice #1042 is 12 days overdue",
+      "summary": "Bluebird Home still owes $4,860 and no reminder has been sent.",
+      "priority": 2,
+      "receipt_ids": [
+        "receipt-invoice-1042-bluebird-invoice-1042-due-date-due-date-2026-03-26",
+        "receipt-invoice-1042-bluebird-invoice-1042-amount-due-amount-due-4-860",
+        "receipt-invoice-1042-bluebird-invoice-1042-reminder-status-reminder-not-yet-sent",
+        "receipt-note-founder-fulfillment-reminder-cadence-payment-reminder-cadence-first-reminder-at-7-ov"
+      ],
+      "owner": "finance",
+      "due": "today",
+      "source_agents": [
+        "finance_agent"
+      ],
+      "status": "open"
+    }
+  ],
+  "customer_comms": [
+    {
+      "id": "comms-acme-retail-shipment",
+      "title": "Prepare a trust-rebuilding update for ACME Retail",
+      "summary": "Use direct language, provide a firm ETA, and explicitly address the partial-ship fallback.",
+      "priority": 1,
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-launch-timeline-is-at-risk-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-wants-a-plain-update-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-asked-for-a-partial-delivery-fallback-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-delay-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-partial-shipment-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-sensitive-account-note-acme-account-is-sensitive-after-the-february-pac"
+      ],
+      "owner": "customer_success",
+      "due": "today",
+      "source_agents": [
+        "customer_relations_agent"
+      ],
+      "status": "ready_for_review"
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk-acme-retail-trust",
+      "title": "ACME Retail trust risk is elevated",
+      "summary": "The account is launch-sensitive and the founder note says this relationship has low tolerance for vague updates.",
+      "priority": 1,
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-asked-about-a-partial-delivery-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-asked-for-a-partial-delivery-fallback-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-is-waiting-on-a-shipment-update-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-launch-timeline-is-at-risk-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-requested-a-realistic-eta-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-wants-a-plain-update-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-delay-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-partial-shipment-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-sensitive-account-note-acme-account-is-sensitive-after-the-february-pac",
+        "receipt-note-founder-fulfillment-supplier-escalation-rule-stock-is-missing-from-the-tuesday-truck-call-no"
+      ],
+      "owner": "ops",
+      "due": "today",
+      "source_agents": [
+        "customer_relations_agent",
+        "inbox_agent"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "risk-ar-bluebird-home-1042",
+      "title": "$4,860 is aging in receivables",
+      "summary": "Invoice #1042 is outside the first reminder window and cash collection is slipping.",
+      "priority": 2,
+      "receipt_ids": [
+        "receipt-invoice-1042-bluebird-invoice-1042-due-date-due-date-2026-03-26",
+        "receipt-invoice-1042-bluebird-invoice-1042-amount-due-amount-due-4-860",
+        "receipt-invoice-1042-bluebird-invoice-1042-reminder-status-reminder-not-yet-sent",
+        "receipt-note-founder-fulfillment-reminder-cadence-payment-reminder-cadence-first-reminder-at-7-ov"
+      ],
+      "owner": "finance",
+      "due": null,
+      "source_agents": [
+        "finance_agent"
+      ],
+      "status": "open"
+    }
+  ],
+  "recommended_actions": [
+    {
+      "id": "action-inbox-waiting-acme-retail",
+      "title": "Send ACME Retail a factual shipment update today",
+      "summary": "Confirm revised timing, avoid vague language, and include the partial-ship option if inventory is split.",
+      "priority": 1,
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-asked-about-a-partial-delivery-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-asked-for-a-partial-delivery-fallback-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-is-waiting-on-a-shipment-update-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-launch-timeline-is-at-risk-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-requested-a-realistic-eta-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-wants-a-plain-update-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-delay-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-partial-shipment-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-sensitive-account-note-acme-account-is-sensitive-after-the-february-pac",
+        "receipt-note-founder-fulfillment-supplier-escalation-rule-stock-is-missing-from-the-tuesday-truck-call-no"
+      ],
+      "owner": "ops",
+      "due": "today",
+      "source_agents": [
+        "customer_relations_agent",
+        "inbox_agent"
+      ],
+      "status": "pending_review"
+    },
+    {
+      "id": "action-finance-overdue-1042",
+      "title": "Send payment follow-up for invoice #1042",
+      "summary": "Collect a payment date from Bluebird Home and restart collections cadence immediately.",
+      "priority": 2,
+      "receipt_ids": [
+        "receipt-invoice-1042-bluebird-invoice-1042-due-date-due-date-2026-03-26",
+        "receipt-invoice-1042-bluebird-invoice-1042-amount-due-amount-due-4-860",
+        "receipt-invoice-1042-bluebird-invoice-1042-reminder-status-reminder-not-yet-sent",
+        "receipt-note-founder-fulfillment-reminder-cadence-payment-reminder-cadence-first-reminder-at-7-ov"
+      ],
+      "owner": "finance",
+      "due": "today",
+      "source_agents": [
+        "finance_agent"
+      ],
+      "status": "pending_review"
+    }
+  ],
+  "drafts": [
+    {
+      "id": "draft-payment-reminder-1042",
+      "channel": "email",
+      "subject": "Payment reminder: Invoice #1042",
+      "body": "Hi Bluebird Home,\n\nA quick reminder that invoice #1042 for $4,860 was due on 2026-03-26 and is now 12 days overdue.\nPlease reply with the payment date, or let us know if anything is blocking processing on your side.\n\nThank you,\nAccounts",
+      "tone": "firm and professional",
+      "related_action_id": "action-finance-overdue-1042",
+      "receipt_ids": [
+        "receipt-invoice-1042-bluebird-invoice-1042-due-date-due-date-2026-03-26",
+        "receipt-invoice-1042-bluebird-invoice-1042-amount-due-amount-due-4-860",
+        "receipt-invoice-1042-bluebird-invoice-1042-reminder-status-reminder-not-yet-sent",
+        "receipt-note-founder-fulfillment-reminder-cadence-payment-reminder-cadence-first-reminder-at-7-ov"
+      ]
+    },
+    {
+      "id": "draft-acme-retail-shipment",
+      "channel": "email",
+      "subject": "Shipment update and next steps",
+      "body": "Hi Maya,\n\nYou are right to ask for a direct update.\nThe shipment did not leave on the original timing, and we are confirming the revised dispatch window with the supplier this morning.\nWe will send you a firm ETA today. If the full order cannot move together, we will confirm whether a partial shipment can go first to protect the Friday launch.\n\nBest,\nOperations",
+      "tone": "direct, accountable, date-specific",
+      "related_action_id": "action-comms-acme-retail-shipment",
+      "receipt_ids": [
+        "receipt-email-acme-shipment-delay-customer-launch-timeline-is-at-risk-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-wants-a-plain-update-today-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-email-acme-shipment-delay-customer-asked-for-a-partial-delivery-fallback-hi-team-we-still-do-not-have-a-delivery-update",
+        "receipt-note-founder-fulfillment-delay-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-partial-shipment-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+        "receipt-note-founder-fulfillment-sensitive-account-note-acme-account-is-sensitive-after-the-february-pac"
+      ]
+    }
+  ],
+  "receipts": [
+    {
+      "id": "receipt-note-founder-fulfillment-delay-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+      "title": "Delay rule",
+      "source_id": "note_founder_fulfillment",
+      "source_name": "Fulfillment note - founder desk",
+      "source_type": "note",
+      "excerpt": "If any outbound shipment slips by more than 48 hours, email the customer the same day with a revised ETA and offer a partial ship if stock is split."
+    },
+    {
+      "id": "receipt-note-founder-fulfillment-partial-shipment-rule-if-any-outbound-shipment-slips-by-more-than-48-h",
+      "title": "Partial shipment rule",
+      "source_id": "note_founder_fulfillment",
+      "source_name": "Fulfillment note - founder desk",
+      "source_type": "note",
+      "excerpt": "If any outbound shipment slips by more than 48 hours, email the customer the same day with a revised ETA and offer a partial ship if stock is split."
+    },
+    {
+      "id": "receipt-note-founder-fulfillment-supplier-escalation-rule-stock-is-missing-from-the-tuesday-truck-call-no",
+      "title": "Supplier escalation rule",
+      "source_id": "note_founder_fulfillment",
+      "source_name": "Fulfillment note - founder desk",
+      "source_type": "note",
+      "excerpt": "stock is missing from the Tuesday truck: Call Northline supplier before 11:00"
+    },
+    {
+      "id": "receipt-note-founder-fulfillment-reminder-cadence-payment-reminder-cadence-first-reminder-at-7-ov",
+      "title": "Reminder cadence",
+      "source_id": "note_founder_fulfillment",
+      "source_name": "Fulfillment note - founder desk",
+      "source_type": "note",
+      "excerpt": "Payment reminder cadence: first reminder at 7 overdue days, second reminder at 14 overdue days"
+    },
+    {
+      "id": "receipt-note-founder-fulfillment-sensitive-account-note-acme-account-is-sensitive-after-the-february-pac",
+      "title": "Sensitive account note",
+      "source_id": "note_founder_fulfillment",
+      "source_name": "Fulfillment note - founder desk",
+      "source_type": "note",
+      "excerpt": "ACME account is sensitive after the February packaging mistake: be direct and give a date, not 'soon'"
+    },
+    {
+      "id": "receipt-email-acme-shipment-delay-customer-is-waiting-on-a-shipment-update-hi-team-we-still-do-not-have-a-delivery-update",
+      "title": "Customer is waiting on a shipment update",
+      "source_id": "email_acme_shipment_delay",
+      "source_name": "Re: ACME spring launch order - shipment update?",
+      "source_type": "email",
+      "excerpt": "Hi team, We still do not have a delivery update for PO-7781. Your team said the shipment would leave last Thursday, but our store launch is on Friday and we need a realistic ETA today. If the shipment slipped, please..."
+    },
+    {
+      "id": "receipt-email-acme-shipment-delay-customer-requested-a-realistic-eta-today-hi-team-we-still-do-not-have-a-delivery-update",
+      "title": "Customer requested a realistic ETA today",
+      "source_id": "email_acme_shipment_delay",
+      "source_name": "Re: ACME spring launch order - shipment update?",
+      "source_type": "email",
+      "excerpt": "Hi team, We still do not have a delivery update for PO-7781. Your team said the shipment would leave last Thursday, but our store launch is on Friday and we need a realistic ETA today. If the shipment slipped, please..."
+    },
+    {
+      "id": "receipt-email-acme-shipment-delay-customer-asked-about-a-partial-delivery-hi-team-we-still-do-not-have-a-delivery-update",
+      "title": "Customer asked about a partial delivery",
+      "source_id": "email_acme_shipment_delay",
+      "source_name": "Re: ACME spring launch order - shipment update?",
+      "source_type": "email",
+      "excerpt": "Hi team, We still do not have a delivery update for PO-7781. Your team said the shipment would leave last Thursday, but our store launch is on Friday and we need a realistic ETA today. If the shipment slipped, please..."
+    },
+    {
+      "id": "receipt-invoice-1042-bluebird-invoice-1042-due-date-due-date-2026-03-26",
+      "title": "Invoice #1042 due date",
+      "source_id": "invoice_1042_bluebird",
+      "source_name": "Invoice #1042",
+      "source_type": "invoice",
+      "excerpt": "Due Date: 2026-03-26"
+    },
+    {
+      "id": "receipt-invoice-1042-bluebird-invoice-1042-amount-due-amount-due-4-860",
+      "title": "Invoice #1042 amount due",
+      "source_id": "invoice_1042_bluebird",
+      "source_name": "Invoice #1042",
+      "source_type": "invoice",
+      "excerpt": "Amount Due: $4,860"
+    },
+    {
+      "id": "receipt-invoice-1042-bluebird-invoice-1042-reminder-status-reminder-not-yet-sent",
+      "title": "Invoice #1042 reminder status",
+      "source_id": "invoice_1042_bluebird",
+      "source_name": "Invoice #1042",
+      "source_type": "invoice",
+      "excerpt": "Reminder not yet sent."
+    },
+    {
+      "id": "receipt-email-acme-shipment-delay-customer-launch-timeline-is-at-risk-hi-team-we-still-do-not-have-a-delivery-update",
+      "title": "Customer launch timeline is at risk",
+      "source_id": "email_acme_shipment_delay",
+      "source_name": "Re: ACME spring launch order - shipment update?",
+      "source_type": "email",
+      "excerpt": "Hi team, We still do not have a delivery update for PO-7781. Your team said the shipment would leave last Thursday, but our store launch is on Friday and we need a realistic ETA today. If the shipment slipped, please..."
+    },
+    {
+      "id": "receipt-email-acme-shipment-delay-customer-wants-a-plain-update-today-hi-team-we-still-do-not-have-a-delivery-update",
+      "title": "Customer wants a plain update today",
+      "source_id": "email_acme_shipment_delay",
+      "source_name": "Re: ACME spring launch order - shipment update?",
+      "source_type": "email",
+      "excerpt": "Hi team, We still do not have a delivery update for PO-7781. Your team said the shipment would leave last Thursday, but our store launch is on Friday and we need a realistic ETA today. If the shipment slipped, please..."
+    },
+    {
+      "id": "receipt-email-acme-shipment-delay-customer-asked-for-a-partial-delivery-fallback-hi-team-we-still-do-not-have-a-delivery-update",
+      "title": "Customer asked for a partial delivery fallback",
+      "source_id": "email_acme_shipment_delay",
+      "source_name": "Re: ACME spring launch order - shipment update?",
+      "source_type": "email",
+      "excerpt": "Hi team, We still do not have a delivery update for PO-7781. Your team said the shipment would leave last Thursday, but our store launch is on Friday and we need a realistic ETA today. If the shipment slipped, please..."
+    }
+  ]
+}

@@ -6,15 +6,26 @@ from datetime import date
 from pathlib import Path
 
 
-def main() -> None:
-    root = Path(__file__).resolve().parents[2]
-    if str(root) not in sys.path:
-        sys.path.insert(0, str(root))
+ROOT = Path(__file__).resolve().parents[2]
+DEMO_REFERENCE_DATE = date(2026, 4, 7)
+
+
+def ensure_repo_root_on_path() -> Path:
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    return ROOT
+
+
+def demo_data_dir() -> Path:
+    return ROOT / "backend" / "data" / "demo_inputs"
+
+
+def build_demo_business_state() -> dict:
+    ensure_repo_root_on_path()
 
     from backend.ingestion.build_business_state import SourceDocument, build_business_state
 
-    data_dir = root / "backend" / "data" / "demo_inputs"
-    output_path = data_dir / "business_state.json"
+    data_dir = demo_data_dir()
 
     sources = [
         SourceDocument(
@@ -37,9 +48,19 @@ def main() -> None:
         ),
     ]
 
-    business_state = build_business_state(sources, reference_date=date(2026, 4, 7))
-    output_path.write_text(json.dumps(business_state, indent=2) + "\n")
-    print("Wrote %s" % output_path.relative_to(root))
+    return build_business_state(sources, reference_date=DEMO_REFERENCE_DATE)
+
+
+def write_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n")
+
+
+def main() -> None:
+    output_path = demo_data_dir() / "business_state.json"
+    business_state = build_demo_business_state()
+    write_json(output_path, business_state)
+    print("Wrote %s" % output_path.relative_to(ROOT))
 
 
 if __name__ == "__main__":

@@ -14,6 +14,16 @@ from backend.agents.inbox_agent import run_inbox_agent
 from backend.agents.orchestrator import create_daily_brief
 
 
+def build_daily_brief(business_state: dict) -> dict:
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [
+            executor.submit(run_inbox_agent, business_state),
+            executor.submit(run_finance_agent, business_state),
+            executor.submit(run_customer_relations_agent, business_state),
+        ]
+    return create_daily_brief([future.result() for future in futures])
+
+
 def main() -> int:
     input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("business_state.json")
     output_path = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("daily_brief.json")
@@ -21,13 +31,7 @@ def main() -> int:
     with input_path.open("r", encoding="utf-8") as infile:
         business_state = json.load(infile)
 
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [
-            executor.submit(run_inbox_agent, business_state),
-            executor.submit(run_finance_agent, business_state),
-            executor.submit(run_customer_relations_agent, business_state),
-        ]
-    daily_brief = create_daily_brief([future.result() for future in futures])
+    daily_brief = build_daily_brief(business_state)
 
     with output_path.open("w", encoding="utf-8") as outfile:
         json.dump(daily_brief, outfile, indent=2)

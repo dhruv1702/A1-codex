@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BriefCard } from "@/components/BriefCard";
 import { DraftPanel } from "@/components/DraftPanel";
 import { ReceiptPanel } from "@/components/ReceiptPanel";
@@ -35,6 +35,7 @@ const demoPasteText =
   "Founder note: keep customer updates specific, make recommendation reasons easy to inspect, and review any company record updates before applying them.";
 
 export default function Page() {
+  const bootedFromQuery = useRef(false);
   const [queuedFiles, setQueuedFiles] = useState<QueuedInputFile[]>([]);
   const [pastedText, setPastedText] = useState("");
   const [voiceTranscript, setVoiceTranscript] = useState("");
@@ -44,7 +45,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [askValue, setAskValue] = useState("");
 
-  const handleRun = async () => {
+  const runBrief = async () => {
     setIsRunning(true);
     setError(null);
 
@@ -64,6 +65,24 @@ export default function Page() {
     setPastedText(demoPasteText);
     setVoiceTranscript("Please summarize what needs review today and show why each recommendation was made.");
   };
+
+  useEffect(() => {
+    if (bootedFromQuery.current || typeof window === "undefined") {
+      return;
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (!searchParams.has("demo")) {
+      return;
+    }
+
+    bootedFromQuery.current = true;
+    handleLoadDemo();
+
+    if (searchParams.has("run") || searchParams.has("compiled")) {
+      void runBrief();
+    }
+  }, []);
 
   const renderActionItem = (action: RecommendedAction) => {
     const isSelected = selectedInsight?.id === action.id;
@@ -221,7 +240,7 @@ export default function Page() {
             onFilesChange={setQueuedFiles}
             onPastedTextChange={setPastedText}
             onVoiceTranscriptChange={setVoiceTranscript}
-            onRun={handleRun}
+            onRun={runBrief}
             onLoadDemo={handleLoadDemo}
             isRunning={isRunning}
           />
