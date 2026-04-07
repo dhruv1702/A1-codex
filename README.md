@@ -60,7 +60,7 @@ npm install
 npm run dev
 ```
 
-`npm run dev` now starts Next.js in polling mode by default to avoid `Watchpack Error (watcher): EMFILE` on this setup.
+`npm run dev` now clears `.next` and starts Next.js in polling mode by default to avoid stale build artifacts and `Watchpack Error (watcher): EMFILE` on this setup.
 
 If you want the non-polling watcher path, use:
 
