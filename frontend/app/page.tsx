@@ -75,19 +75,26 @@ export default function Page() {
         type="button"
         onClick={() => setSelectedInsight(action)}
       >
-        <div className="action-head">
-          <div>
-            <strong className="card-item-title">{action.title}</strong>
-            <p className="action-rationale">{action.rationale}</p>
-          </div>
-          <span className="action-priority" data-priority={action.priority}>
-            {action.priority}
+        <div className="todo-row">
+          <span className="todo-marker" aria-hidden="true">
+            {action.requiresReview ? "○" : "✓"}
           </span>
-        </div>
-        <div className="tag-row">
-          <span className="tag">{action.status}</span>
-          <span className="tag">{action.owner}</span>
-          <span className="tag">{action.requiresReview ? "Needs review" : "Ready"}</span>
+          <div className="todo-body">
+            <div className="action-head">
+              <div>
+                <strong className="card-item-title">{action.title}</strong>
+                <p className="action-rationale">{action.rationale}</p>
+              </div>
+              <span className="action-priority" data-priority={action.priority}>
+                {action.priority}
+              </span>
+            </div>
+            <div className="tag-row">
+              <span className="tag">{action.status}</span>
+              <span className="tag">{action.owner}</span>
+              <span className="tag">{action.requiresReview ? "Needs review" : "Ready"}</span>
+            </div>
+          </div>
         </div>
       </button>
     );
@@ -138,39 +145,6 @@ export default function Page() {
       </header>
 
       <div className="workspace">
-        <div className="left-rail">
-          <UploadBox
-            queuedFiles={queuedFiles}
-            pastedText={pastedText}
-            voiceTranscript={voiceTranscript}
-            onFilesChange={setQueuedFiles}
-            onPastedTextChange={setPastedText}
-            onVoiceTranscriptChange={setVoiceTranscript}
-            onRun={handleRun}
-            onLoadDemo={handleLoadDemo}
-            isRunning={isRunning}
-          />
-
-          <section className="panel ask-panel">
-            <div className="panel-head">
-              <div>
-                <p className="kicker">Ask box</p>
-                <h2>Ask your business...</h2>
-              </div>
-            </div>
-            <textarea
-              className="ask-input"
-              placeholder="Example: What should I review before replying to ACME Retail?"
-              value={askValue}
-              onChange={(event) => setAskValue(event.target.value)}
-            />
-            <p className="ask-footnote">
-              This demo keeps the ask box lightweight. It is present as a UX surface and does not
-              imply a live multi-turn backend yet.
-            </p>
-          </section>
-        </div>
-
         <section>
           <section className="panel summary-panel">
             <div className="summary-head">
@@ -221,7 +195,7 @@ export default function Page() {
             <div className="action-head">
               <div>
                 <p className="kicker">Recommended actions</p>
-                <h2>Suggested next steps</h2>
+                <h2>Today&apos;s to-do list</h2>
               </div>
               <span className="chip">
                 {brief ? `${brief.recommendedActions.length} suggestions` : "Waiting"}
@@ -239,6 +213,18 @@ export default function Page() {
               </p>
             )}
           </section>
+
+          <UploadBox
+            queuedFiles={queuedFiles}
+            pastedText={pastedText}
+            voiceTranscript={voiceTranscript}
+            onFilesChange={setQueuedFiles}
+            onPastedTextChange={setPastedText}
+            onVoiceTranscriptChange={setVoiceTranscript}
+            onRun={handleRun}
+            onLoadDemo={handleLoadDemo}
+            isRunning={isRunning}
+          />
 
           {brief ? <div className="brief-grid">{(["ops", "finance", "comms", "risks"] as const).map(renderCard)}</div> : null}
 
@@ -274,6 +260,25 @@ export default function Page() {
                 Proposed company or database updates will be shown as reviewable suggestions only.
               </p>
             )}
+          </section>
+
+          <section className="panel ask-panel">
+            <div className="panel-head">
+              <div>
+                <p className="kicker">Ask box</p>
+                <h2>Ask your business...</h2>
+              </div>
+            </div>
+            <textarea
+              className="ask-input"
+              placeholder="Example: What should I review before replying to ACME Retail?"
+              value={askValue}
+              onChange={(event) => setAskValue(event.target.value)}
+            />
+            <p className="ask-footnote">
+              This demo keeps the ask box lightweight. It is present as a UX surface and does not
+              imply a live multi-turn backend yet.
+            </p>
           </section>
         </section>
 

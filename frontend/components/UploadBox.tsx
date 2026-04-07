@@ -133,7 +133,7 @@ export function UploadBox({
       <div className="panel-head">
         <div>
           <p className="kicker">Intake</p>
-          <h2>Messy inputs</h2>
+          <h2>Run a daily brief</h2>
         </div>
         <button className="button button-secondary" type="button" onClick={onLoadDemo}>
           Load demo inputs
@@ -141,6 +141,17 @@ export function UploadBox({
       </div>
 
       <div className="intake-grid">
+        <div className="telegram-placeholder">
+          <div>
+            <p className="kicker">Future input channel</p>
+            <h3>Telegram bot placeholder</h3>
+          </div>
+          <p className="helper-copy">
+            This can also be triggered from a Telegram bot that gathers owner messages, email pulls,
+            and other business inputs before preparing the same reviewable brief.
+          </p>
+        </div>
+
         <div
           className={`upload-zone${isDragging ? " drag-active" : ""}`}
           onDragEnter={(event) => {
@@ -178,7 +189,9 @@ export function UploadBox({
             <label className="upload-trigger" htmlFor={inputId}>
               Upload files
             </label>
-            <span className="upload-note">Drop notes, invoices, exports, or demo files here.</span>
+            <span className="upload-note">
+              Drop notes, invoices, exports, or demo files here to prepare the brief.
+            </span>
           </div>
 
           {queuedFiles.length > 0 ? (
@@ -234,7 +247,7 @@ export function UploadBox({
             {isRunning ? "Preparing brief..." : "Run Daily Brief"}
           </button>
           <span className="helper-copy">
-            Recommendations stay grounded in the uploaded inputs and remain reviewable.
+            The output stays reviewable and does not imply anything was sent or updated automatically.
           </span>
         </div>
 

@@ -140,12 +140,11 @@ a {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(310px, 360px) minmax(560px, 1fr) minmax(320px, 380px);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
   gap: 20px;
   align-items: start;
 }
 
-.left-rail,
 .right-rail {
   display: grid;
   gap: 20px;
@@ -466,6 +465,32 @@ a {
   cursor: pointer;
 }
 
+.todo-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.todo-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.todo-body {
+  min-width: 0;
+  flex: 1;
+}
+
 .action-priority {
   font-weight: 700;
 }
@@ -532,6 +557,14 @@ a {
   margin-top: 12px;
   font-size: 0.92rem;
   color: var(--muted);
+}
+
+.telegram-placeholder {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(33, 94, 77, 0.08), rgba(255, 255, 255, 0.86));
 }
 
 @media (max-width: 1200px) {
