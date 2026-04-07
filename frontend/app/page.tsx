@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { BriefCard } from "@/components/BriefCard";
 import { DraftPanel } from "@/components/DraftPanel";
 import { ReceiptPanel } from "@/components/ReceiptPanel";
-import { QueuedInputFile, UploadBox } from "@/components/UploadBox";
+import { InputSourceType, QueuedInputFile, UploadBox } from "@/components/UploadBox";
 import {
   DailyBriefInput,
   BriefSectionItem,
@@ -19,16 +19,19 @@ const demoFiles: QueuedInputFile[] = [
     id: "demo-acme-email",
     name: "acme-shipment-delay-email.txt",
     sizeLabel: "2 KB",
+    sourceType: "email",
   },
   {
     id: "demo-invoice",
     name: "invoice-1042.txt",
     sizeLabel: "1 KB",
+    sourceType: "invoice",
   },
   {
     id: "demo-founder-note",
     name: "founder-fulfillment-note.md",
     sizeLabel: "2 KB",
+    sourceType: "note",
   },
 ];
 
@@ -40,12 +43,40 @@ export default function Page() {
   const [queuedFiles, setQueuedFiles] = useState<QueuedInputFile[]>([]);
   const [pastedText, setPastedText] = useState("");
   const [voiceTranscript, setVoiceTranscript] = useState("");
+  const [pastedTextSourceType, setPastedTextSourceType] = useState<InputSourceType>("auto");
+  const [voiceTranscriptSourceType, setVoiceTranscriptSourceType] = useState<InputSourceType>("note");
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [brief, setBrief] = useState<DailyBrief | null>(null);
   const [selectedInsight, setSelectedInsight] = useState<SelectableInsight | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [askValue, setAskValue] = useState("");
+
+  const titleForInlineInput = (kind: "pasted" | "voice", sourceType: InputSourceType): string => {
+    if (kind === "voice") {
+      if (sourceType === "email") {
+        return "Voice-dictated customer email";
+      }
+      if (sourceType === "invoice") {
+        return "Voice-dictated invoice note";
+      }
+      if (sourceType === "note") {
+        return "Voice note";
+      }
+      return "Voice note transcript";
+    }
+
+    if (sourceType === "email") {
+      return "Pasted customer email";
+    }
+    if (sourceType === "invoice") {
+      return "Pasted invoice text";
+    }
+    if (sourceType === "note") {
+      return "Pasted operating note";
+    }
+    return "Pasted text";
+  };
 
   const buildLiveInputs = (): DailyBriefInput[] => {
     const fileInputs = queuedFiles
@@ -54,6 +85,7 @@ export default function Page() {
         sourceId: file.id,
         title: file.name,
         text: file.text ?? "",
+        sourceType: file.sourceType && file.sourceType !== "auto" ? file.sourceType : undefined,
       }));
 
     const textInputs: DailyBriefInput[] = [];
@@ -61,16 +93,18 @@ export default function Page() {
     if (pastedText.trim()) {
       textInputs.push({
         sourceId: "pasted-note",
-        title: "Pasted operating note",
+        title: titleForInlineInput("pasted", pastedTextSourceType),
         text: pastedText.trim(),
+        sourceType: pastedTextSourceType !== "auto" ? pastedTextSourceType : undefined,
       });
     }
 
     if (voiceTranscript.trim()) {
       textInputs.push({
         sourceId: "voice-note",
-        title: "Voice note transcript",
+        title: titleForInlineInput("voice", voiceTranscriptSourceType),
         text: voiceTranscript.trim(),
+        sourceType: voiceTranscriptSourceType !== "auto" ? voiceTranscriptSourceType : undefined,
       });
     }
 
@@ -100,6 +134,8 @@ export default function Page() {
     setQueuedFiles(demoFiles);
     setPastedText(demoPasteText);
     setVoiceTranscript("Please summarize what needs review today and show why each recommendation was made.");
+    setPastedTextSourceType("note");
+    setVoiceTranscriptSourceType("note");
     setIsDemoMode(true);
   };
 
@@ -115,6 +151,16 @@ export default function Page() {
 
   const handleVoiceTranscriptChange = (value: string) => {
     setVoiceTranscript(value);
+    setIsDemoMode(false);
+  };
+
+  const handlePastedTextSourceTypeChange = (value: InputSourceType) => {
+    setPastedTextSourceType(value);
+    setIsDemoMode(false);
+  };
+
+  const handleVoiceTranscriptSourceTypeChange = (value: InputSourceType) => {
+    setVoiceTranscriptSourceType(value);
     setIsDemoMode(false);
   };
 
@@ -289,9 +335,13 @@ export default function Page() {
             queuedFiles={queuedFiles}
             pastedText={pastedText}
             voiceTranscript={voiceTranscript}
+            pastedTextSourceType={pastedTextSourceType}
+            voiceTranscriptSourceType={voiceTranscriptSourceType}
             onFilesChange={handleFilesChange}
             onPastedTextChange={handlePastedTextChange}
             onVoiceTranscriptChange={handleVoiceTranscriptChange}
+            onPastedTextSourceTypeChange={handlePastedTextSourceTypeChange}
+            onVoiceTranscriptSourceTypeChange={handleVoiceTranscriptSourceTypeChange}
             onRun={runBrief}
             onLoadDemo={handleLoadDemo}
             isRunning={isRunning}

@@ -21,6 +21,7 @@ from backend.ingestion.build_business_state import (
 from backend.ingestion.parse_email import parse_email
 from backend.ingestion.parse_invoice import parse_invoice
 from backend.ingestion.parse_note import parse_note
+from backend.run_daily_brief import build_daily_brief
 
 
 DEMO_DIR = ROOT / "backend" / "data" / "demo_inputs"
@@ -292,6 +293,39 @@ class BuildBusinessStateTests(unittest.TestCase):
         self.assertEqual(result["commitments"], llm_state["commitments"])
         self.assertEqual(result["sops"], llm_state["sops"])
         parse_with_llm.assert_called_once()
+
+
+class DailyBriefTests(unittest.TestCase):
+    def test_build_daily_brief_surfaces_unknowns_as_review_items(self) -> None:
+        business_state = {
+            "customers": [],
+            "invoices": [],
+            "open_issues": [],
+            "commitments": [],
+            "sops": [],
+            "events": [],
+            "unknowns": [
+                {
+                    "source_id": "invoice_missing_due",
+                    "field_name": "due_date",
+                    "reason": "Invoice due date was not found.",
+                }
+            ],
+            "source_map": {
+                "invoice_missing_due": {
+                    "source_type": "invoice",
+                    "title": "Invoice #1058",
+                    "snippet": "Invoice #1058 extracted text",
+                    "date": "2026-04-07",
+                }
+            },
+        }
+
+        result = build_daily_brief(business_state)
+
+        self.assertEqual(result["risks"][0]["title"], "Review extraction gaps in Invoice #1058")
+        self.assertEqual(result["recommended_actions"][0]["title"], "Resolve missing fields in Invoice #1058")
+        self.assertEqual(result["receipts"][0]["title"], "Missing due date")
 
 
 if __name__ == "__main__":

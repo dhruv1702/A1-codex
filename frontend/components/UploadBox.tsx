@@ -28,6 +28,8 @@ interface SpeechRecognitionConstructor {
   new (): SpeechRecognitionLike;
 }
 
+export type InputSourceType = "auto" | "email" | "invoice" | "note";
+
 export interface QueuedInputFile {
   id: string;
   name: string;
@@ -35,15 +37,20 @@ export interface QueuedInputFile {
   text?: string;
   mimeType?: string;
   isDemo?: boolean;
+  sourceType?: InputSourceType;
 }
 
 interface UploadBoxProps {
   queuedFiles: QueuedInputFile[];
   pastedText: string;
   voiceTranscript: string;
+  pastedTextSourceType: InputSourceType;
+  voiceTranscriptSourceType: InputSourceType;
   onFilesChange: (files: QueuedInputFile[]) => void;
   onPastedTextChange: (value: string) => void;
   onVoiceTranscriptChange: (value: string) => void;
+  onPastedTextSourceTypeChange: (value: InputSourceType) => void;
+  onVoiceTranscriptSourceTypeChange: (value: InputSourceType) => void;
   onRun: () => void;
   onLoadDemo: () => void;
   isRunning: boolean;
@@ -59,13 +66,59 @@ function formatFileSize(size: number) {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function detectSourceType(name: string, text: string, mimeType: string): InputSourceType {
+  const loweredName = name.toLowerCase();
+  const loweredText = text.toLowerCase();
+  const loweredMimeType = mimeType.toLowerCase();
+
+  if (
+    loweredName.includes("invoice") ||
+    loweredText.includes("invoice #") ||
+    (loweredText.includes("amount due") && loweredText.includes("due date"))
+  ) {
+    return "invoice";
+  }
+
+  if (
+    loweredMimeType.includes("message") ||
+    loweredName.includes("email") ||
+    loweredText.includes("subject:") ||
+    loweredText.includes("from:")
+  ) {
+    return "email";
+  }
+
+  if (
+    loweredName.includes("note") ||
+    loweredName.includes("sop") ||
+    loweredText.includes("playbook") ||
+    loweredText.includes("same day") ||
+    loweredText.includes("reminder cadence")
+  ) {
+    return "note";
+  }
+
+  return "auto";
+}
+
+const SOURCE_TYPE_OPTIONS: Array<{ value: InputSourceType; label: string }> = [
+  { value: "auto", label: "Auto-detect" },
+  { value: "email", label: "Customer email" },
+  { value: "invoice", label: "Invoice" },
+  { value: "note", label: "Note / SOP" },
+];
+
 export function UploadBox({
   queuedFiles,
   pastedText,
   voiceTranscript,
+  pastedTextSourceType,
+  voiceTranscriptSourceType,
   onFilesChange,
   onPastedTextChange,
   onVoiceTranscriptChange,
+  onPastedTextSourceTypeChange,
+  onVoiceTranscriptSourceTypeChange,
   onRun,
   onLoadDemo,
   isRunning,
@@ -80,16 +133,29 @@ export function UploadBox({
 
   const addFiles = async (incomingFiles: FileList | File[]) => {
     const nextFiles = await Promise.all(
-      Array.from(incomingFiles).map(async (file, index) => ({
-        id: `${file.name}-${file.lastModified}-${index}`,
-        name: file.name,
-        sizeLabel: formatFileSize(file.size),
-        text: await file.text(),
-        mimeType: file.type || "text/plain",
-      })),
+      Array.from(incomingFiles).map(async (file, index) => {
+        const text = await file.text();
+        return {
+          id: `${file.name}-${file.lastModified}-${index}`,
+          name: file.name,
+          sizeLabel: formatFileSize(file.size),
+          text,
+          mimeType: file.type || "text/plain",
+          sourceType: detectSourceType(file.name, text, file.type || "text/plain"),
+        };
+      }),
     );
 
-    onFilesChange(nextFiles);
+    const existingFiles = queuedFiles.filter(
+      (existingFile) => !nextFiles.some((nextFile) => nextFile.id === existingFile.id),
+    );
+    onFilesChange([...existingFiles, ...nextFiles]);
+  };
+
+  const updateFileSourceType = (fileId: string, sourceType: InputSourceType) => {
+    onFilesChange(
+      queuedFiles.map((file) => (file.id === fileId ? { ...file, sourceType } : file)),
+    );
   };
 
   const handleMic = () => {
@@ -215,8 +281,26 @@ export function UploadBox({
                   <div className="upload-list">
                     {queuedFiles.map((file) => (
                       <div className="upload-item" key={file.id}>
-                        <strong>{file.name}</strong>
-                        <span>{file.sizeLabel}</span>
+                        <div className="upload-item-meta">
+                          <strong>{file.name}</strong>
+                          <span>{file.sizeLabel}</span>
+                        </div>
+                        <div className="source-row">
+                          <span className="helper-copy">Treat as</span>
+                          <select
+                            className="source-select"
+                            value={file.sourceType ?? "auto"}
+                            onChange={(event) =>
+                              updateFileSourceType(file.id, event.target.value as InputSourceType)
+                            }
+                          >
+                            {SOURCE_TYPE_OPTIONS.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -236,6 +320,22 @@ export function UploadBox({
               <span className="chip">{pastedText.trim() ? "Added" : "Empty"}</span>
             </summary>
             <div className="input-accordion-body">
+              <div className="source-row">
+                <span className="helper-copy">Treat as</span>
+                <select
+                  className="source-select"
+                  value={pastedTextSourceType}
+                  onChange={(event) =>
+                    onPastedTextSourceTypeChange(event.target.value as InputSourceType)
+                  }
+                >
+                  {SOURCE_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <textarea
                 className="paste-box"
                 placeholder="Paste a customer email, founder note, invoice summary, or operating context."
@@ -254,6 +354,22 @@ export function UploadBox({
               <span className="chip">{voiceTranscript.trim() ? "Captured" : "Optional"}</span>
             </summary>
             <div className="input-accordion-body">
+              <div className="source-row">
+                <span className="helper-copy">Treat as</span>
+                <select
+                  className="source-select"
+                  value={voiceTranscriptSourceType}
+                  onChange={(event) =>
+                    onVoiceTranscriptSourceTypeChange(event.target.value as InputSourceType)
+                  }
+                >
+                  {SOURCE_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="mic-row">
                 <button className="button button-outline" type="button" onClick={handleMic}>
                   {isRecording ? "Stop listening" : "Use microphone"}

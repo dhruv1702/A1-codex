@@ -78,6 +78,8 @@ Frontend intake modes:
 - `GET /api/daily-brief` rebuilds the fixed demo brief from the backend demo fixtures.
 - `POST /api/daily-brief` accepts uploaded text files, pasted text, and voice transcript text, then runs the Python ingestion + agent pipeline on those live inputs.
 - Live input parsing stays deterministic first, then falls back to an OpenAI structured-output parser when the initial extraction is too weak to be useful.
+- The intake UI now lets you override source type per uploaded file and for pasted or voice text, so ambiguous documents do not have to rely on auto-detection.
+- If parsing still leaves required fields unresolved, the brief surfaces those gaps as review items instead of silently dropping them.
 
 LLM setup for broad document parsing:
 
